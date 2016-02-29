@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="/Users/Daulet/Documents/Course/cs313/NxtJLib/lib/NxtJLib.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/Daulet/Documents/Course/cs313/NxtJLib/doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/Daulet/Documents/Course/cs313/bluecove-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/Daulet/Documents/Course/cs313/JGameGrid/robotsim/lib/RobotSim.jar" sourcepath="/Users/Daulet/Documents/Course/cs313/JGameGrid/robotsim/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/Daulet/Documents/Course/cs313/JGameGrid/robotsim/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/Daulet/Documents/Course/cs313/JGameGrid/lib/JGameGrid.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/Daulet/Documents/Course/cs313/JGameGrid/doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.lejos.nxt.ldt.LEJOS_LIBRARY_CONTAINER/nxt"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
