@@ -16,10 +16,11 @@ public class GridBot
     robot.addPart(lsLeft);
     robot.addPart(lsRight);
     
-	RobotContext.setStartPosition(0, 0);
-        
+	DataStore ds = new DataStore();
+	
 	Behavior b1 = new DriveForward(gear);
 	Behavior b2 = new JunctionDetectorPro(gear,
+									ds,
 								  lsLeft,
 			 					  lsRight);
 	Behavior b3 = new LineDetector(gear, lsLeft, lsRight);

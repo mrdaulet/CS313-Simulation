@@ -24,7 +24,7 @@ class DriveForward implements Behavior {
 
      while( !suppressed ) {
     	 pilot.forward(30);
-    	 Tools.delay(50);
+//    	 Tools.delay(50);
     	 Thread.yield(); 
      }
    }
