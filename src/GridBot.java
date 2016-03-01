@@ -34,7 +34,7 @@ public class GridBot
 
   public static void _init(GameGrid gg)
   {
-	  gg.setBgImagePath("/Users/Daulet/Documents/Course/cs313/Test/sprites/grid5.gif");
+	  gg.setBgImagePath("sprites/grid5.gif");
   }
   
   static {

@@ -165,7 +165,6 @@ public class JunctionDetectorPro implements Behavior {
 	   System.out.println("Rotating " + direction + " : " + maxAngle);
 	   
 	   while (totalAngle < maxAngle) {
-		   System.out.println(pilot.getRotationIndex());
 		   if(direction.equals("left"))
 			   pilot.left(rotationUnits);
 		   else
