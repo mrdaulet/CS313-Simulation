@@ -158,6 +158,12 @@ public class JunctionDetectorPro implements Behavior {
 	   int lastReading = pilot.getRotationIndex(), totalAngle = 0;
 	   int differenceInHeading = newHeading - heading;
 	   
+	   if (Math.abs(differenceInHeading) > 2) {
+		   System.out.println(differenceInHeading + " " + (2 - differenceInHeading) % 4);
+		   differenceInHeading = (2 - differenceInHeading) % 4;
+	   }
+	   
+	   
 	   String direction = differenceInHeading < 0 ? "left" : "right";
 	   int maxAngle = Math.abs(differenceInHeading) * 90;
 	   
