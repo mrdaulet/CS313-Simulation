@@ -26,18 +26,18 @@ public class GridBot
 	
 	Behavior [] bArray = {b1, b2};
 	Arbitrator arby = new Arbitrator(bArray);
+	
+	Tools.delay(200);
 	arby.start();
   }
 
   public static void _init(GameGrid gg)
   {
-	  gg.setSimulationPeriod(100);
-	  gg.setBgImagePath("/Users/Daulet/Documents/Course/cs313/Test/sprites/grid4.gif");
+	  gg.setBgImagePath("/Users/Daulet/Documents/Course/cs313/Test/sprites/grid5.gif");
   }
   
   static {
-	  RobotContext.showNavigationBar();
-	  RobotContext.setStartPosition(45, 270);
+	  RobotContext.setStartPosition(47, 270);
   }
 
   public static void main(String[] args)
