@@ -16,14 +16,15 @@ public class GridBot
     robot.addPart(lsLeft);
     robot.addPart(lsRight);
     
-	DataStore ds = new DataStore();
+    PilotGear pilot = new PilotGear(gear);
+    DataStore ds = new DataStore();
 	
-	Behavior b1 = new DriveForward(gear);
-	Behavior b2 = new JunctionDetectorPro(gear,
+	Behavior b1 = new DriveForward(pilot);
+	Behavior b2 = new JunctionDetectorPro(pilot,
 									ds,
 								  lsLeft,
 			 					  lsRight);
-	Behavior b3 = new LineDetector(gear, lsLeft, lsRight);
+	Behavior b3 = new LineDetector(pilot, lsLeft, lsRight);
 	
 	Behavior [] bArray = {b1, b2};
 	Arbitrator arby = new Arbitrator(bArray);

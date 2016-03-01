@@ -1,13 +1,11 @@
-import ch.aplu.robotsim.Gear;
-import ch.aplu.robotsim.Tools;
 import lejos.robotics.subsumption.Behavior;
 
 class DriveForward implements Behavior {
    private boolean suppressed = false;
    
-   private Gear pilot;
+   private PilotGear pilot;
    
-   public DriveForward(Gear pilot) {
+   public DriveForward(PilotGear pilot) {
 	   this.pilot = pilot;
    }
    

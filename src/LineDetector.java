@@ -4,12 +4,12 @@ import lejos.robotics.subsumption.Behavior;
 
 public class LineDetector implements Behavior {
 	   
-	private Gear pilot;
+	private PilotGear pilot;
 	private LightSensor leftSensor;
 	private LightSensor rightSensor;
 	private boolean suppressed = false;
 	   	   
-	public LineDetector(Gear pilot,LightSensor leftSensor, LightSensor rightSensor) {
+	public LineDetector(PilotGear pilot,LightSensor leftSensor, LightSensor rightSensor) {
 		this.pilot = pilot;
 		this.leftSensor = leftSensor;
 		this.rightSensor = rightSensor;
@@ -31,18 +31,12 @@ public class LineDetector implements Behavior {
 		 int leftVal = leftSensor.getValue();
 		 int rightVal = rightSensor.getValue();
 
-		 if (rightVal < leftVal)
-			 {
-			 	pilot.left(30);
-			 }
-			 else
-				if(leftVal > rightVal)
-			 {			 	
-				pilot.right(30);
-			 }
+		 if (rightVal < leftVal) {
+			 pilot.rotate(30);
+		 } else
+		 if(leftVal > rightVal) {			 	
+			 pilot.rotate(-30);
+		 }
 		 pilot.forward(8);
-
-		 Thread.yield();
-		 
 	   }
 	}

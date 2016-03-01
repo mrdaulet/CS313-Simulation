@@ -8,7 +8,7 @@ public class JunctionDetectorPro implements Behavior {
 	
 	private RobotState state = new RobotState();
 
-	private Gear pilot;
+	private PilotGear pilot;
 	private LightSensor leftSensor;
 	private LightSensor rightSensor;
 	private DataStore ds;
@@ -26,7 +26,7 @@ public class JunctionDetectorPro implements Behavior {
 
 	private boolean suppressed = false;
    
-	public JunctionDetectorPro(Gear pilot, DataStore ds, LightSensor leftSensor, LightSensor rightSensor) {
+	public JunctionDetectorPro(PilotGear pilot, DataStore ds, LightSensor leftSensor, LightSensor rightSensor) {
 		this.pilot = pilot;
 		//this.pilot.setSpeed(30);
 		this.leftSensor = leftSensor;
@@ -172,9 +172,9 @@ public class JunctionDetectorPro implements Behavior {
 	   
 	   while (totalAngle < maxAngle) {
 		   if(direction.equals("left"))
-			   pilot.left(rotationUnits);
+			   pilot.rotate(-rotationUnits);
 		   else
-			   pilot.right(rotationUnits);
+			   pilot.rotate(rotationUnits);
 
 		   /* Only in simulation BEGIN*/
 		   totalAngle += ((direction.equals("left") ? -1 : 1) * (pilot.getRotationIndex() - lastReading) + 360) % 360;
@@ -203,7 +203,7 @@ public class JunctionDetectorPro implements Behavior {
 			   }
 		   }
 		   				   		   
-		   pilot.right(rotationUnits);
+		   pilot.rotate(rotationUnits);
 //		   Tools.delay(50);
 		   
 		   /* Only in simulation BEGIN*/
