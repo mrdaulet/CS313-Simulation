@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 import ch.aplu.robotsim.Gear;
 import ch.aplu.robotsim.LightSensor;
 import ch.aplu.robotsim.RobotContext;
@@ -14,7 +16,7 @@ public class JunctionDetectorPro implements Behavior {
 	private DataStore ds;
 	
 	private int gridX = 0;
-	private int gridY = 0;
+	private int gridY = -1;
 	private Junction currentJunction;	
 	
 	private int L_ABS_DARK_TRESHOLD = 530;
@@ -33,7 +35,9 @@ public class JunctionDetectorPro implements Behavior {
 		this.rightSensor = rightSensor;
 		this.ds = ds;
 		currentJunction = new Junction();   
-		ds.setJunction(gridX,gridY,currentJunction);
+//		currentJunction.edges[0] = Junction.type.UNEXPLORED;
+//		currentJunction.edges[1] = Junction.type.UNEXPLORED;
+//		ds.setJunction(gridX,gridY,currentJunction);
 	}
    
 	public boolean takeControl() {
@@ -62,37 +66,69 @@ public class JunctionDetectorPro implements Behavior {
    private int heading = 0;
    private boolean isExploring = true;
    
+   private boolean explorationDone = false;
+   LinkedList<Integer> shortestPath;
+   
    /* junction is observed */
    public void action() {
 	   suppressed = false;
 	   
+	   if (explorationDone)
+	   {
+		   int newHeading = shortestPath.pop().intValue();
+		   if (heading != newHeading)
+			   rotateToNewHeading(heading,newHeading);
+		   
+		   heading = newHeading;
+		   
+		   pilot.stop();
+	   }
+	   
 	   boolean encounteredBefore = false;
 	   
-	   pilot.forward(200); // 75 in real
-	   
-	   switch(heading){
-		   case 0: gridY++; break;
-		   case 1: gridX++; break;
-		   case 2: gridY--; break;
-		   case 3: gridX--; break;
-	   }  	   
-	   
-	   Junction n = ds.getJunction(gridX, gridY);
-
-	   System.out.println("Currently at: " + gridX + ", " + gridY);
-	   
-	   if (n == null){
-		   n = new Junction();
-		   scoutJunctionNighbors(n);
+	   if(!DataStore.currentlyBlocked){
+		   pilot.forward(200); // 75 in real
+		   switch(heading){
+			   case 0: gridY++; break;
+			   case 1: gridX++; break;
+			   case 2: gridY--; break;
+			   case 3: gridX--; break;
+		   }
+		   
+		   Junction n = ds.getJunction(gridX, gridY);
+		   
+		   if (n == null){
+			   System.out.println("---------------NEW JUNCTION--------------");
+			   n = new Junction();
+			   scoutJunctionNighbors(n);
+		   }
+		   else
+			   encounteredBefore = true;
+		   
+		   currentJunction.neghbors[(heading + 0)%4] = n;
+		   n.neghbors[(heading + 2)%4] = currentJunction;
+		   currentJunction = n;
+		   
 	   }
-	   else
-		   encounteredBefore = true;
+	   else {
+		   pilot.forward(100);
+		   DataStore.currentlyBlocked = false;
+		   System.out.println("Current heading: " + heading);
+		   isExploring = false;
+	   }
+	   System.out.println("Currently at: " + gridX + ", " + gridY);
+
 	   
-	   currentJunction.neghbors[(heading + 0)%4] = n;
-	   n.neghbors[(heading + 2)%4] = currentJunction;
-	   currentJunction = n;
+	   int newHeading = getNextHeading(currentJunction, encounteredBefore);
 	   
-	   int newHeading = getNextHeading(n, encounteredBefore);
+	   if(newHeading == -1){
+		   explorationDone = true;
+		   shortestPath = ds.getShortestPath();
+		   rotateToNewHeading(heading,0);
+		   System.out.println("--------------DONE EXPLORING--------------------");
+		   pilot.stop();
+		   return;
+	   }
 	   
 	   System.out.println("Next heading: " + newHeading);
 	   
@@ -179,21 +215,15 @@ public class JunctionDetectorPro implements Behavior {
 	
 	private void scoutJunctionNighbors(Junction n) {
 	   int currentRotation = 0, rotationUnits = 30; // 2160 / 30 = 72 turns
-	   int sector = 0;
+	   int sector = -1;
 	   int lastReading = pilot.getRotationIndex(), totalAngle = 0;
-	   int numberOfIncidentEdges = 0;
-	   int oldSector = sector;
 	   while (totalAngle < 360) {		   
 		   if (isLeftBlack() || isRightBlack()) {
-			   if(sector != oldSector){
-				   if (currentRotation >= TURN_90*sector-8*rotationUnits && currentRotation <= TURN_90*sector+8*rotationUnits) {
-					   if (sector == 2)
-						   n.edges[(heading + 2)%4] = Junction.type.ORIGIN;
-					   else
-						   n.edges[(heading + sector)%4] = Junction.type.UNEXPLORED;
-				   }
-				   numberOfIncidentEdges++;
-				   oldSector = sector;
+			if (currentRotation >= TURN_90*sector-8*rotationUnits && currentRotation <= TURN_90*sector+8*rotationUnits) {
+				   if (sector == 2)
+					   n.edges[(heading + 2)%4] = Junction.type.ORIGIN;
+				   else
+					   n.edges[(heading + sector)%4] = Junction.type.UNEXPLORED;
 			   }
 		   }
 		   				   		   
@@ -212,12 +242,17 @@ public class JunctionDetectorPro implements Behavior {
 //			   System.out.println("Changed sector " + currentRotation);
 		   }
 	   }
+	    int count = 0;
+		for(int i = 0; i < 4; i++)
+		{
+			if(n.edges[i] == Junction.type.UNEXPLORED || n.edges[i] == Junction.type.ORIGIN)
+				count++;
+		}
+		if(count == 2 && gridX != 0 && gridY != 0){
+			System.out.println("Found target at: " + gridX + ", " + gridY);
+			ds.targetX = gridX;
+			ds.targetY = gridY;
+		}
 	   
-	   // Detecting of it is top right corner (can also be bottom left :/ )
-	   if (numberOfIncidentEdges == 2 && gridX == gridY){
-		   ds.targetX = gridX;
-		   ds.targetY = gridX;
-		   System.out.println("Found target at " + gridX + ", " + gridY);
-	   }
 	}
 }

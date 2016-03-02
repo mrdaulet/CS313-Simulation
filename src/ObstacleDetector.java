@@ -1,7 +1,10 @@
+
+import ch.aplu.robotsim.Gear;
+import ch.aplu.robotsim.UltrasonicSensor;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-import lejos.nxt.LightSensor;
-import lejos.nxt.UltrasonicSensor;
+import ch.aplu.robotsim.LightSensor;
+import ch.aplu.robotsim.TouchSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Behavior;
  
@@ -10,29 +13,26 @@ class ObstacleDetector implements Behavior {
 	
        private boolean suppressed = false;
        
-       private DifferentialPilot pilot;
-       private UltrasonicSensor sonic;
+       private Gear pilot;
+       private TouchSensor sonic;
        private LightSensor leftSensor;
- 
-       private Graph junctionGraph;
        
-       private final int CRITICAL_DISTANCE = 10;
+       private final int CRITICAL_DISTANCE = 2; //10 in real
        private final int FULL_ROTATION = 1240;
  
        
-       public ObstacleDetector(DifferentialPilot pilot, UltrasonicSensor sonic, LightSensor lightSensor, Graph junctionGraph) {
+       public ObstacleDetector(Gear pilot, TouchSensor us, LightSensor lsLeft) {
            this.pilot = pilot;
-           this.sonic = sonic;
-           leftSensor = lightSensor;
-           this.junctionGraph = junctionGraph;
+           this.sonic = us;
+           leftSensor = lsLeft;
        }
      
  
     public boolean takeControl() {
-            int distance = sonic.getDistance();
-           
-            if(distance < CRITICAL_DISTANCE)
-                return true;
+//            int distance = sonic.getDistance();
+            //if (distance < CRITICAL_DISTANCE) // IRL
+            if (sonic.isPressed())
+            	return true;
             return false;
        }
  
@@ -41,17 +41,21 @@ class ObstacleDetector implements Behavior {
        }
  
        public void action() {
-           
+         DataStore.currentlyBlocked = true;
          suppressed = false;
-         int amountToRotate = -20;
-         int leftVal = leftSensor.getNormalizedLightValue();
-         
-         boolean lineCrossed = true;
-         
-         while(leftVal > 500){
-             pilot.rotate(amountToRotate);
-             leftVal = leftSensor.getNormalizedLightValue();
+         System.out.println("WALL AHEAD");
+         while( !suppressed ) {
+        	 pilot.backward(30);
+        	 Thread.yield(); 
          }
+//         int leftVal = leftSensor.getValue();
+//         
+//         boolean lineCrossed = true;
+//         
+//         while(leftVal > 500){
+//             pilot.left(amountToRotate);
+//             leftVal = leftSensor.getValue();
+//         }
          
 //       int amountRotated = 0;
          
