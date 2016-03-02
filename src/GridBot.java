@@ -20,13 +20,10 @@ public class GridBot
     DataStore ds = new DataStore();
 	
 	Behavior b1 = new DriveForward(pilot);
-	Behavior b2 = new JunctionDetectorPro(pilot,
-									ds,
-								  lsLeft,
-			 					  lsRight);
+	Behavior b2 = new JunctionDetectorPro(pilot, ds, lsLeft, lsRight);
 	Behavior b3 = new LineDetector(pilot, lsLeft, lsRight);
 	
-	Behavior [] bArray = {b1, b2};
+	Behavior [] bArray = {b1, b3, b2};
 	Arbitrator arby = new Arbitrator(bArray);
 	
 	Tools.delay(200);
@@ -39,7 +36,8 @@ public class GridBot
   }
   
   static {
-	  RobotContext.setStartPosition(47, 270);
+	  RobotContext.setStartPosition(47, 70);
+//	  RobotContext.setStartPosition(47, 270);
   }
 
   public static void main(String[] args)

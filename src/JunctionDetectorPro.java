@@ -26,6 +26,9 @@ public class JunctionDetectorPro implements Behavior {
 
 	private boolean suppressed = false;
    
+	private int heading = 0;
+	private boolean isExploring = true;
+	
 	public JunctionDetectorPro(PilotGear pilot, DataStore ds, LightSensor leftSensor, LightSensor rightSensor) {
 		this.pilot = pilot;
 		//this.pilot.setSpeed(30);
@@ -58,10 +61,7 @@ public class JunctionDetectorPro implements Behavior {
    private boolean isRightBlack() {
 	   return rightSensor.getValue() < SIM_DARK_TRESHOLD;
    }
-   
-   private int heading = 0;
-   private boolean isExploring = true;
-   
+      
    /* junction is observed */
    public void action() {
 	   suppressed = false;
@@ -185,21 +185,17 @@ public class JunctionDetectorPro implements Behavior {
 	
 	private void scoutJunctionNighbors(Junction n) {
 	   int currentRotation = 0, rotationUnits = 30; // 2160 / 30 = 72 turns
-	   int sector = 0;
+	   int sector = -1;
 	   int lastReading = pilot.getRotationIndex(), totalAngle = 0;
-	   int numberOfIncidentEdges = 0;
-	   int oldSector = sector;
 	   while (totalAngle < 360) {		   
 		   if (isLeftBlack() || isRightBlack()) {
-			   if(sector != oldSector){
-				   if (currentRotation >= TURN_90*sector-8*rotationUnits && currentRotation <= TURN_90*sector+8*rotationUnits) {
-					   if (sector == 2)
-						   n.edges[(heading + 2)%4] = Junction.type.ORIGIN;
-					   else
-						   n.edges[(heading + sector)%4] = Junction.type.UNEXPLORED;
-				   }
-				   numberOfIncidentEdges++;
-				   oldSector = sector;
+			if (currentRotation >= TURN_90*sector-8*rotationUnits && currentRotation <= TURN_90*sector+8*rotationUnits) {
+				   if (sector == 2)
+					   n.edges[(heading + 2)%4] = Junction.type.ORIGIN;
+				   else
+					   n.edges[(heading + sector)%4] = Junction.type.UNEXPLORED;
+				   
+				   System.out.println("Edge on: " + (heading + sector)%4);
 			   }
 		   }
 		   				   		   
@@ -215,15 +211,7 @@ public class JunctionDetectorPro implements Behavior {
 		   
 		   if (currentRotation - (sector+1)*TURN_90 >= 0) {
 			   sector++;
-//			   System.out.println("Changed sector " + currentRotation);
 		   }
-	   }
-	   
-	   // Detecting of it is top right corner (can also be bottom left :/ )
-	   if (numberOfIncidentEdges == 2 && gridX == gridY){
-		   ds.targetX = gridX;
-		   ds.targetY = gridX;
-		   System.out.println("Found target at " + gridX + ", " + gridY);
 	   }
 	}
 }
