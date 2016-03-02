@@ -2,13 +2,17 @@ import java.util.LinkedList;
 
 public class DataStore {
 	static boolean currentlyBlocked = false;
-	private int gridOffset = 250;
+	private int gridOffset = 50;
 	public int targetX, targetY, currentX,currentY;
 	
 	private Junction[][] grid;
 	
+	public final int cellWidth = 180; // 270
+	public int currentDistance;
+	public int junctionCnt = 0;
+	
 	public DataStore(){
-		grid = new Junction[500][500];
+		grid = new Junction[100][100];
 	}
 	
 	public void setJunction(int i,int j, Junction n){
@@ -34,7 +38,7 @@ public class DataStore {
 		
 //		Lee's algorithm, or complete BFS, whatever
 		while (!Q.isEmpty()){
-			Junction current = Q.pop();
+			Junction current = Q.remove(Q.size() - 1);
 			for(int i = 0; i < 4; i++){
 				if (current.neghbors[i] != null && current.neghbors[i].costSoFar > current.costSoFar + 1){
 					current.neghbors[i].costSoFar = current.costSoFar + 1;
@@ -50,7 +54,7 @@ public class DataStore {
 		
 		System.out.println();
 		while(current.parent != null){
-			headingSequence.addFirst(current.cameFrom);
+			headingSequence.add(0,current.cameFrom);
 			System.out.print(current.cameFrom + ", ");
 			current = current.parent;
 		}

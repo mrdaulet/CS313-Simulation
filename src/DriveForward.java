@@ -1,14 +1,15 @@
-import ch.aplu.robotsim.Gear;
-import ch.aplu.robotsim.Tools;
+import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Behavior;
 
 class DriveForward implements Behavior {
    private boolean suppressed = false;
    
-   private Gear pilot;
+   private DifferentialPilot pilot;
+   private DataStore dataStore;
    
-   public DriveForward(Gear pilot) {
+   public DriveForward(DifferentialPilot pilot, DataStore ds) {
 	   this.pilot = pilot;
+	   this.dataStore = ds;
    }
    
    public boolean takeControl() {
@@ -23,7 +24,11 @@ class DriveForward implements Behavior {
      suppressed = false;
 
      while( !suppressed ) {
-    	 pilot.forward(30);
+    	 
+    	 int distance = 10;
+    	 pilot.travel(distance);
+    	 dataStore.currentDistance += distance;
+    	 
 //    	 Tools.delay(50);
     	 Thread.yield(); 
      }

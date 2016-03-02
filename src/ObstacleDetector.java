@@ -1,10 +1,7 @@
-
-import ch.aplu.robotsim.Gear;
-import ch.aplu.robotsim.UltrasonicSensor;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-import ch.aplu.robotsim.LightSensor;
-import ch.aplu.robotsim.TouchSensor;
+import lejos.nxt.LightSensor;
+import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.subsumption.Behavior;
  
@@ -13,15 +10,15 @@ class ObstacleDetector implements Behavior {
 	
        private boolean suppressed = false;
        
-       private Gear pilot;
-       private TouchSensor sonic;
+       private DifferentialPilot pilot;
+       private UltrasonicSensor sonic;
        private LightSensor leftSensor;
        
-       private final int CRITICAL_DISTANCE = 2; //10 in real
+       private final int CRITICAL_DISTANCE = 7; //10 in real
        private final int FULL_ROTATION = 1240;
  
        
-       public ObstacleDetector(Gear pilot, TouchSensor us, LightSensor lsLeft) {
+       public ObstacleDetector(DifferentialPilot pilot, UltrasonicSensor us, LightSensor lsLeft) {
            this.pilot = pilot;
            this.sonic = us;
            leftSensor = lsLeft;
@@ -29,9 +26,9 @@ class ObstacleDetector implements Behavior {
      
  
     public boolean takeControl() {
-//            int distance = sonic.getDistance();
-            //if (distance < CRITICAL_DISTANCE) // IRL
-            if (sonic.isPressed())
+            int distance = sonic.getDistance();
+//            System.out.println(distance);
+            if (distance < CRITICAL_DISTANCE) // IRL
             	return true;
             return false;
        }
@@ -41,11 +38,12 @@ class ObstacleDetector implements Behavior {
        }
  
        public void action() {
+//    	   ds.currentDistance = 0;
          DataStore.currentlyBlocked = true;
          suppressed = false;
          System.out.println("WALL AHEAD");
          while( !suppressed ) {
-        	 pilot.backward(30);
+        	 pilot.travel(-10);
         	 Thread.yield(); 
          }
 //         int leftVal = leftSensor.getValue();
